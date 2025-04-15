@@ -1,0 +1,104 @@
+#pragma kernel CSMain
+
+struct Boid
+{
+    float3 position;
+    float3 velocity;
+};
+
+RWStructuredBuffer<Boid> boids;
+int boidCount;
+float dt;
+
+float3 lowerBounds;
+float3 upperBounds;
+
+[numthreads(10, 1, 1)]
+void CSMain(uint id : SV_DispatchThreadID)
+{
+    Boid b = boids[id];
+    
+    float3 forceToApply = float3(0.0f, 0.0f, 0.0f);
+    float3 alignment = float3(0.0f, 0.0f, 0.0f);
+    float3 separation = float3(0.0f, 0.0f, 0.0f);
+    float3 cohesion = float3(0.0f, 0.0f, 0.0f);
+    
+    float alignmentRad = 4.0f;
+    float separationRad = 2.0f;
+    float cohesionRad = 6.0f;
+    
+    float alignmentTotal = 0.0f;
+    float separationTotal = 0.0f;
+    float cohesionTotal = 0.0f;
+    
+    //Distance From Each
+    for (int i = 0; i < boidCount; i++)
+    {
+        float3 diff = boids[i].position - b.position;
+        float dist = length(diff);
+        
+        if(dist <= 0)
+            continue;
+        //Adding to Alignment Force
+        if (dist < alignmentRad)
+        {
+            alignment += boids[i].velocity;
+            alignmentTotal++;
+        }
+        
+        //Adding to Separation Force
+        if (dist < separationRad)
+        {
+            separation += diff * (-1.0f / dist);
+            separationTotal++;
+        }
+        
+        if (dist < cohesionRad)
+        {
+            cohesion += boids[i].position;
+            cohesionTotal++;
+        }
+    }
+    
+    //Scale Based on acting boids
+    if (alignmentTotal > 0)
+    {
+        alignment /= alignmentTotal;
+        alignment = normalize(alignment);
+    }
+    
+    if(separationTotal > 0)
+    {
+        separation /= separationTotal;
+        separation = normalize(separation);
+    }
+        
+    if(cohesionTotal > 0)
+    {
+        cohesion /= cohesionTotal;
+        cohesion -= b.position;
+        cohesion = normalize(cohesion);
+    }
+    
+    //Apply Steering Force
+    forceToApply += (alignment - b.velocity);
+    forceToApply += (separation - b.velocity);
+    forceToApply += (cohesion - b.velocity);
+    
+    
+    //Applying Forces and Changing Velocity
+    b.velocity += forceToApply * dt;
+    b.velocity = normalize(b.velocity);
+    b.position += b.velocity * dt;
+    
+    {//bounds check
+        b.position.x += b.position.x < lowerBounds.x ? upperBounds.x - lowerBounds.x : 0;
+        b.position.x += b.position.x > upperBounds.x ? lowerBounds.x - upperBounds.x : 0;
+        b.position.y += b.position.y < lowerBounds.y ? upperBounds.y - lowerBounds.y : 0;
+        b.position.y += b.position.y > upperBounds.y ? lowerBounds.y - upperBounds.y : 0;
+        b.position.z += b.position.z < lowerBounds.z ? upperBounds.z - lowerBounds.z : 0;
+        b.position.z += b.position.z > upperBounds.z ? lowerBounds.z - upperBounds.z : 0;
+    }
+    
+    boids[id] = b;
+}
