@@ -6,7 +6,8 @@ struct Boid
     float3 velocity;
 };
 
-RWStructuredBuffer<Boid> boids;
+
+RWStructuredBuffer<Boid> boids;//might use ping ponging buffers
 int boidCount;
 float dt;
 

@@ -16,6 +16,8 @@ public class FlockingScript : MonoBehaviour
     public ComputeBuffer csBuffer;
     [SerializeField] private Transform minimumBounds;
     [SerializeField] private Transform maximumBounds;
+    [SerializeField] Mesh fishMesh;
+    [SerializeField] Material fishMat;
 
     private Boid[] data;
     private int count;
@@ -23,17 +25,16 @@ public class FlockingScript : MonoBehaviour
 
     void Start()
     {
-        count = transform.childCount;
+        count = 32;
         data = new Boid[count];
 
         for (int i = 0; i < transform.childCount; i++)
         {
-            transform.GetChild(i).localPosition = new Vector3(
+            data[i].position = new Vector3(
                 Random.Range(minimumBounds.position.x, maximumBounds.position.x), 
                 Random.Range(minimumBounds.position.y, maximumBounds.position.y), 
                 Random.Range(minimumBounds.position.z, maximumBounds.position.z)
             );
-            data[i].position = transform.GetChild(i).localPosition;
             
             while(data[i].velocity == null || data[i].velocity == Vector3.zero)
                 data[i].velocity = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1)).normalized;
@@ -59,11 +60,8 @@ public class FlockingScript : MonoBehaviour
 
         csBuffer.GetData(data);
 
-        for (int i = 0; i < count; i++)
-        {
-            transform.GetChild(i).localPosition = data[i].position;
-            transform.GetChild(i).rotation = Quaternion.LookRotation(data[i].velocity, Vector3.up);
-        }
+        //might use a compute buffer to get model matrices
+        //Graphics.DrawMeshInstanced(fishMesh, 0, fishMat, );//Buffer with arguments, bufferWithArgs, has to have five integer numbers at given argsOffset offset: index count per instance, instance count, start index location, base vertex location, start instance location.
     }
 
     private void OnDestroy()
