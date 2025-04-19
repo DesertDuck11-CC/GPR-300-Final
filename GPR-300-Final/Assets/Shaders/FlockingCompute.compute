@@ -7,7 +7,7 @@ struct Boid
 };
 
 
-RWStructuredBuffer<Boid> boids;//might use ping ponging buffers
+RWStructuredBuffer<Boid> boids; //might use ping ponging buffers
 int boidCount;
 float dt;
 
@@ -17,6 +17,8 @@ float3 upperBounds;
 [numthreads(10, 1, 1)]
 void CSMain(uint id : SV_DispatchThreadID)
 {
+    if (id >= boidCount)
+        return;
     Boid b = boids[id];
     
     float3 forceToApply = float3(0.0f, 0.0f, 0.0f);
@@ -38,7 +40,7 @@ void CSMain(uint id : SV_DispatchThreadID)
         float3 diff = boids[i].position - b.position;
         float dist = length(diff);
         
-        if(dist <= 0)
+        if (dist <= 0)
             continue;
         //Adding to Alignment Force
         if (dist < alignmentRad)
@@ -48,7 +50,7 @@ void CSMain(uint id : SV_DispatchThreadID)
         }
         
         //Adding to Separation Force
-        if (dist < separationRad)
+        if (dist < separationRad && dist != 0)
         {
             separation += diff * (-1.0f / dist);
             separationTotal++;
@@ -68,13 +70,13 @@ void CSMain(uint id : SV_DispatchThreadID)
         alignment = normalize(alignment);
     }
     
-    if(separationTotal > 0)
+    if (separationTotal > 0)
     {
         separation /= separationTotal;
         separation = normalize(separation);
     }
         
-    if(cohesionTotal > 0)
+    if (cohesionTotal > 0)
     {
         cohesion /= cohesionTotal;
         cohesion -= b.position;

@@ -4,9 +4,12 @@ MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - cs: {fileID: 7200000, guid: 167c7f5a84c28634f903313f0162a9c3, type: 3}
+  - csFlocking: {fileID: 7200000, guid: 167c7f5a84c28634f903313f0162a9c3, type: 3}
+  - csMatrix: {fileID: 7200000, guid: 32e68dada732a534f8e4687d9d95dd58, type: 3}
   - minimumBounds: {instanceID: 0}
   - maximumBounds: {instanceID: 0}
+  - fishMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  - fishMat: {fileID: 2100000, guid: 29c1b609cce16c84a9cf0c3d4248a4a2, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -12,28 +12,42 @@ public struct Boid
 
 public class FlockingScript : MonoBehaviour
 {
-    public ComputeShader cs;
-    public ComputeBuffer csBuffer;
-    [SerializeField] private Transform minimumBounds;
-    [SerializeField] private Transform maximumBounds;
+    //Compute shaders to handle flocking
+    public ComputeShader csFlocking;
+    public ComputeBuffer cbFlocking;
+
+    //Compute shaders to change from position and forward to model matrix
+    public ComputeShader csMatrix;
+    public ComputeBuffer cbMatrixMatrices;
+
+    private Vector3 minimumBounds = Vector3.zero;
+    private Vector3 maximumBounds = new Vector3(40, 20, 30);
+
+    //Passed into DrawMeshInstanced
     [SerializeField] Mesh fishMesh;
     [SerializeField] Material fishMat;
 
-    private Boid[] data;
-    private int count;
-    private int kernel;
+    private Boid[] data; //buffer of boids
+    private int count; //number of boids
+    private int flockingKernel;
 
-    void Start()
+    private Matrix4x4[] modelMatrices;
+    private int matrixKernel;
+
+    void Awake()
     {
         count = 32;
         data = new Boid[count];
+        modelMatrices = new Matrix4x4[count];
 
-        for (int i = 0; i < transform.childCount; i++)
+        //region contains random generating might move to a compute shader
+        #region
+        for (int i = 0; i < count; i++)
         {
             data[i].position = new Vector3(
-                Random.Range(minimumBounds.position.x, maximumBounds.position.x), 
-                Random.Range(minimumBounds.position.y, maximumBounds.position.y), 
-                Random.Range(minimumBounds.position.z, maximumBounds.position.z)
+                Random.Range(minimumBounds.x, maximumBounds.x), 
+                Random.Range(minimumBounds.y, maximumBounds.y), 
+                Random.Range(minimumBounds.z, maximumBounds.z)
             );
             
             while(data[i].velocity == null || data[i].velocity == Vector3.zero)
@@ -41,31 +55,62 @@ public class FlockingScript : MonoBehaviour
 
             data[i].velocity *= 10;
         }
+        #endregion
 
-        csBuffer = new ComputeBuffer(count, sizeof(float) * 6);
-        csBuffer.SetData(data);
+        // setting up flocking compute shader
+        cbFlocking = new ComputeBuffer(count, sizeof(float) * 6);
+        cbFlocking.SetData(data);
 
-        kernel = cs.FindKernel("CSMain");
-        cs.SetBuffer(kernel, "boids", csBuffer);
-        cs.SetInt("boidCount", count);
-        cs.SetVector("lowerBounds", minimumBounds.position);
-        cs.SetVector("upperBounds", maximumBounds.position);
+        flockingKernel = csFlocking.FindKernel("CSMain");
+        csFlocking.SetBuffer(flockingKernel, "boids", cbFlocking);
+        csFlocking.SetInt("boidCount", count);
+        csFlocking.SetVector("lowerBounds", minimumBounds);
+        csFlocking.SetVector("upperBounds", maximumBounds);
+
+        //setting up model compute shader
+        cbMatrixMatrices = new ComputeBuffer(count, sizeof(float) * 4 * 4);
+        cbMatrixMatrices.SetData(modelMatrices);
+
+        matrixKernel = csMatrix.FindKernel("CSMain");
+        csMatrix.SetBuffer(matrixKernel, "boids", cbFlocking);
+        csMatrix.SetBuffer(matrixKernel, "matrices", cbMatrixMatrices);
+        csMatrix.SetInt("boidCount", count);
+        csMatrix.SetVector("offset", transform.position);
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        cs.SetFloat("dt", Time.fixedDeltaTime);
-        int dispatchCount = Mathf.CeilToInt(count / (float)10);
-        cs.Dispatch(kernel, dispatchCount, 1, 1);
+        csFlocking.SetFloat("dt", Time.fixedDeltaTime);
+        int dispatchCount = (count + 9) / 10;
+        csFlocking.Dispatch(flockingKernel, dispatchCount, 1, 1);
 
-        csBuffer.GetData(data);
+        cbFlocking.GetData(data);
+    }
+
+    private void LateUpdate()
+    {
+        int dispatchCount = (count + 9) / 10;
+        csMatrix.Dispatch(matrixKernel, dispatchCount, 1, 1);
+
+        cbMatrixMatrices.GetData(modelMatrices);
+
+        //foreach (var boid in data)
+        //{
+        //    Debug.Log(boid.position);
+        //}
+
+        //foreach (var mat in modelMatrices)
+        //{
+        //    Debug.Log(mat);
+        //}
 
         //might use a compute buffer to get model matrices
-        //Graphics.DrawMeshInstanced(fishMesh, 0, fishMat, );//Buffer with arguments, bufferWithArgs, has to have five integer numbers at given argsOffset offset: index count per instance, instance count, start index location, base vertex location, start instance location.
+        Graphics.DrawMeshInstanced(fishMesh, 0, fishMat, modelMatrices);
     }
 
     private void OnDestroy()
     {
-        csBuffer.Release();
+        cbFlocking.Release();
+        cbMatrixMatrices.Release();
     }
 }

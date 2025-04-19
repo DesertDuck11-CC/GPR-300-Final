@@ -1,0 +1,80 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+struct Boid
+{
+    float3 position;
+    float3 velocity;
+};
+
+StructuredBuffer<Boid> boids;
+RWStructuredBuffer<float4x4> matrices;
+
+float3 offset;
+
+[numthreads(10, 1, 1)]
+void CSMain (uint id : SV_DispatchThreadID)
+{
+    float scale = 1.0f;
+    Boid b = boids[id];
+    
+    float4x4 result = float4x4
+    (
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+    
+    float4x4 scaleMatrix = float4x4
+    (
+        scale, 0.0,   0.0,   0.0,
+        0.0,   scale, 0.0,   0.0,
+        0.0,   0.0,   scale, 0.0,
+        0.0,   0.0,   0.0,   1.0
+    );
+    
+    
+    float3 forward = normalize(b.velocity);
+    
+    float yaw = atan2(forward.x, forward.z);
+    float pitch = asin(-forward.y);
+    float roll = 0.0;
+    float cYaw = cos(yaw);
+    float sYaw = sin(yaw);
+
+    float4x4 rotationYaw = float4x4(
+        cYaw, 0.0, sYaw, 0.0,
+        0.0, 1.0, 0.0, 0.0,
+        -sYaw, 0.0, cYaw, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+    
+    float cPitch = cos(pitch);
+    float sPitch = sin(pitch);
+
+    float4x4 rotationPitch = float4x4(
+        1.0, 0.0, 0.0, 0.0,
+        0.0, cPitch, -sPitch, 0.0,
+        0.0, sPitch, cPitch, 0.0,
+        0.0, 0.0, 0.0, 1.0
+    );
+    
+    float4x4 rotationMatrix = mul(rotationPitch, rotationYaw);
+    
+    
+    float4x4 translationMatrix = float4x4(
+        1.0, 0.0, 0.0, b.position.x + offset.x,
+        0.0, 1.0, 0.0, b.position.y + offset.y,
+        0.0, 0.0, 1.0, b.position.z + offset.z,
+        0.0, 0.0, 0.0, 1.0
+    );
+    
+    //result = mul(translationMatrix, mul(rotationMatrix, scaleMatrix));
+    
+    result = mul(result, scaleMatrix);
+    //result = mul(result, rotationMatrix);
+    result = mul(result, translationMatrix);
+    
+    matrices[id] = result;
+}
