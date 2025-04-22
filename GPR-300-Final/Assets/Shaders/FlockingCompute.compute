@@ -17,8 +17,8 @@ float3 upperBounds;
 [numthreads(10, 1, 1)]
 void CSMain(uint id : SV_DispatchThreadID)
 {
-    if (id >= boidCount)
-        return;
+    /*if (id >= boidCount)
+        return;*/
     Boid b = boids[id];
     
     float3 forceToApply = float3(0.0f, 0.0f, 0.0f);

@@ -80,7 +80,7 @@ public class FlockingScript : MonoBehaviour
 
     private void Update()
     {
-        csFlocking.SetFloat("dt", Time.fixedDeltaTime);
+        csFlocking.SetFloat("dt", Time.deltaTime);
         int dispatchCount = (count + 9) / 10;
         csFlocking.Dispatch(flockingKernel, dispatchCount, 1, 1);
 
@@ -94,17 +94,6 @@ public class FlockingScript : MonoBehaviour
 
         cbMatrixMatrices.GetData(modelMatrices);
 
-        //foreach (var boid in data)
-        //{
-        //    Debug.Log(boid.position);
-        //}
-
-        //foreach (var mat in modelMatrices)
-        //{
-        //    Debug.Log(mat);
-        //}
-
-        //might use a compute buffer to get model matrices
         Graphics.DrawMeshInstanced(fishMesh, 0, fishMat, modelMatrices);
     }
 
