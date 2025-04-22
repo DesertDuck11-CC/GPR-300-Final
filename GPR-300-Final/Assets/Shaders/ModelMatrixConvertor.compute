@@ -1,6 +1,9 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 
+float4 LookRotation(float3 forward, float3 up = float3(0, 1, 0));
+float4x4 RotationMatrix4x4FromQuaternion(float4 q);
+
 struct Boid
 {
     float3 position;
@@ -36,45 +39,38 @@ void CSMain (uint id : SV_DispatchThreadID)
     
     
     float3 forward = normalize(b.velocity);
+    float theta = asin(forward.y);
+    float phi = -atan2(forward.x, forward.z);
     
-    float yaw = atan2(forward.x, forward.z);
-    float pitch = asin(-forward.y);
-    float roll = 0.0;
-    float cYaw = cos(yaw);
-    float sYaw = sin(yaw);
-
-    float4x4 rotationYaw = float4x4(
-        cYaw, 0.0, sYaw, 0.0,
+    float4x4 yawMatrix = float4x4
+    (
+        cos(phi), 0.0, sin(phi), 0.0,
         0.0, 1.0, 0.0, 0.0,
-        -sYaw, 0.0, cYaw, 0.0,
+        -sin(phi), 0.0, cos(phi), 0.0,
         0.0, 0.0, 0.0, 1.0
     );
     
-    float cPitch = cos(pitch);
-    float sPitch = sin(pitch);
-
-    float4x4 rotationPitch = float4x4(
+    float4x4 pitchMatrix = float4x4
+    (
         1.0, 0.0, 0.0, 0.0,
-        0.0, cPitch, -sPitch, 0.0,
-        0.0, sPitch, cPitch, 0.0,
+        0.0, cos(theta), -sin(theta), 0.0,
+        0.0, sin(theta), cos(theta), 0.0,
         0.0, 0.0, 0.0, 1.0
     );
     
-    float4x4 rotationMatrix = mul(rotationPitch, rotationYaw);
+    float4x4 rotationMatrix = mul(yawMatrix, pitchMatrix);
     
-    
-    float4x4 translationMatrix = float4x4(
-        1.0, 0.0, 0.0, b.position.x + offset.x,
-        0.0, 1.0, 0.0, b.position.y + offset.y,
-        0.0, 0.0, 1.0, b.position.z + offset.z,
-        0.0, 0.0, 0.0, 1.0
+    float4x4 translationMatrix = float4x4
+    (
+        float4(1.0, 0.0, 0.0, b.position.x + offset.x),
+        float4(0.0, 1.0, 0.0, b.position.y + offset.y),
+        float4(0.0, 0.0, 1.0, b.position.z + offset.z),
+        float4(0.0, 0.0, 0.0, 1.0)
     );
-    
-    //result = mul(translationMatrix, mul(rotationMatrix, scaleMatrix));
     
     result = mul(result, scaleMatrix);
-    //result = mul(result, rotationMatrix);
     result = mul(result, translationMatrix);
+    result = mul(result, rotationMatrix);
     
     matrices[id] = result;
 }
