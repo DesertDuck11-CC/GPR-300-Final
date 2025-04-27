@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FishMat
-  m_Shader: {fileID: -6465566751694194690, guid: 259fc4591b001034b92f265bd9373b3a, type: 3}
+  m_Name: FishMatTest
+  m_Shader: {fileID: -6465566751694194690, guid: 7633409bece3f69428e1a2232ac35f28, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -85,21 +85,45 @@ Material:
     - _DetailNormalMapScale: 1
     - _Dist: 0.25
     - _DstBlend: 0
-    - _Frequency: 0.5
+    - _Frequency: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _LineCount: 20
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _RollAmount: 0.1
+    - _RollDist: 0.5
+    - _RollFreq: 5
+    - _RollSpeed: 2
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 2
     - _SrcBlend: 1
+    - _SwimAmount: 1
+    - _SwimDist: 0.25
+    - _SwimFrequency: 0.5
+    - _SwimSpeed: 2
+    - _TwirlStrength: 2.59
     - _UVSec: 0
+    - _WobbleAmount: 0.1
+    - _WobbleDist: 0.5
+    - _WobbleFreq: 2
+    - _WobbleSpeed: 2
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color1Dark: {r: 0, g: 1, b: 0.9301295, a: 0}
+    - _Color1Light: {r: 0.7204094, g: 0, b: 1, a: 0}
+    - _Color2Dark: {r: 0.72156864, g: 0, b: 1, a: 1}
+    - _Color2Light: {r: 0, g: 1, b: 0.92941177, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _EyePosition: {r: 0.4, g: -0.01, b: 0, a: 0}
+    - _LineOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _TwirlCenter: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _TwirlOffset: {r: 0.5, g: 0.1, b: 0, a: 0}
+    - _Vector3: {r: 0.05, g: 1, b: 1, a: 0}
+    - _WobbleScale: {r: 0.1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
