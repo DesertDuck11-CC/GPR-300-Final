@@ -139,7 +139,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &117442694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,8 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   csFlocking: {fileID: 7200000, guid: 167c7f5a84c28634f903313f0162a9c3, type: 3}
   csMatrix: {fileID: 7200000, guid: 32e68dada732a534f8e4687d9d95dd58, type: 3}
-  fishMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  fishMat: {fileID: 2100000, guid: 29c1b609cce16c84a9cf0c3d4248a4a2, type: 2}
+  fishMesh: {fileID: 6715375062900545627, guid: 8e5d2d860ddd279479264494b383ecd0, type: 3}
+  fishMat: {fileID: 2100000, guid: 8423e002935a32d478930f41cd5c405f, type: 2}
 --- !u!4 &117442695
 Transform:
   m_ObjectHideFlags: 0
@@ -187,7 +187,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &616871871
 Transform:
   m_ObjectHideFlags: 0
@@ -215,8 +215,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af85e1c5229749e46afc67b91ce907a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-  mat: {fileID: 2100000, guid: 29c1b609cce16c84a9cf0c3d4248a4a2, type: 2}
+  mesh: {fileID: 6715375062900545627, guid: 8e5d2d860ddd279479264494b383ecd0, type: 3}
+  mat: {fileID: 2100000, guid: 8423e002935a32d478930f41cd5c405f, type: 2}
   forward: {x: 0.5774, y: 0.5774, z: 0.5774}
 --- !u!1 &1459301789
 GameObject:
@@ -336,6 +336,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1795743903}
   - component: {fileID: 1795743902}
+  - component: {fileID: 1795743904}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -420,3 +421,26 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &1795743904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1795743901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
