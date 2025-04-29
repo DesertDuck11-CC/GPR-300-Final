@@ -1,9 +1,6 @@
 // Each #kernel tells which function to compile; you can have many kernels
 #pragma kernel CSMain
 
-float4 LookRotation(float3 forward, float3 up = float3(0, 1, 0));
-float4x4 RotationMatrix4x4FromQuaternion(float4 q);
-
 struct Boid
 {
     float3 position;
@@ -39,22 +36,22 @@ void CSMain (uint id : SV_DispatchThreadID)
     
     
     float3 forward = normalize(b.velocity);
-    float theta = asin(forward.y);
+    float theta = asin(clamp(forward.y, -1.0f, 1.0f));
     float phi = -atan2(forward.x, forward.z);
     
     float4x4 yawMatrix = float4x4
     (
-        cos(phi), 0.0, sin(phi), 0.0,
+        cos(phi), 0.0, -sin(phi), 0.0,
         0.0, 1.0, 0.0, 0.0,
-        -sin(phi), 0.0, cos(phi), 0.0,
+        sin(phi), 0.0, cos(phi), 0.0,
         0.0, 0.0, 0.0, 1.0
     );
     
     float4x4 pitchMatrix = float4x4
     (
         1.0, 0.0, 0.0, 0.0,
-        0.0, cos(theta), -sin(theta), 0.0,
-        0.0, sin(theta), cos(theta), 0.0,
+        0.0, cos(theta), sin(theta), 0.0,
+        0.0, -sin(theta), cos(theta), 0.0,
         0.0, 0.0, 0.0, 1.0
     );
     

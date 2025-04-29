@@ -37,6 +37,7 @@ void CSMain(uint id : SV_DispatchThreadID)
     //Distance From Each
     for (int i = 0; i < boidCount; i++)
     {
+        if (i == id) continue;
         float3 diff = boids[i].position - b.position;
         float dist = length(diff);
         
