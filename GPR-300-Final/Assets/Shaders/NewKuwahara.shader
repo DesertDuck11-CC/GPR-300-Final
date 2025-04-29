@@ -1,4 +1,4 @@
-Shader "Hidden/NewKuwahara" {
+Shader "Unlit/NewKuwahara" {
     Properties {
         _MainTex ("Texture", 2D) = "white" {}
     }
