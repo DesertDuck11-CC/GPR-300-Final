@@ -5,7 +5,7 @@ Shader "Hidden/NewKuwahara" {
 
     SubShader {
 
-        Tags { "RenderType"="Transparent" }
+        Tags { "RenderType"="Opaque" "RenderPipeline" = "UniversalPipeline" }
 
         Pass {
             CGPROGRAM
@@ -74,22 +74,22 @@ Shader "Hidden/NewKuwahara" {
 
             float4 fp (v2f i) : SV_Target {
                 float windowSize = 2.0f * _KernelRadius + 1;
-                    int quadrantSize = int(ceil(windowSize / 2.0f));
-                    int numSamples = quadrantSize * quadrantSize;
+                int quadrantSize = int(ceil(windowSize / 2.0f));
+                int numSamples = quadrantSize * quadrantSize;
 
 
-                    float4 q1 = SampleQuadrant(i.uv, -_KernelRadius, 0, -_KernelRadius, 0, numSamples);
-                    float4 q2 = SampleQuadrant(i.uv, 0, _KernelRadius, -_KernelRadius, 0, numSamples);
-                    float4 q3 = SampleQuadrant(i.uv, 0, _KernelRadius, 0, _KernelRadius, numSamples);
-                    float4 q4 = SampleQuadrant(i.uv, -_KernelRadius, 0, 0, _KernelRadius, numSamples);
+                float4 q1 = SampleQuadrant(i.uv, -_KernelRadius, 0, -_KernelRadius, 0, numSamples);
+                float4 q2 = SampleQuadrant(i.uv, 0, _KernelRadius, -_KernelRadius, 0, numSamples);
+                float4 q3 = SampleQuadrant(i.uv, 0, _KernelRadius, 0, _KernelRadius, numSamples);
+                float4 q4 = SampleQuadrant(i.uv, -_KernelRadius, 0, 0, _KernelRadius, numSamples);
 
-                    float minstd = min(q1.a, min(q2.a, min(q3.a, q4.a)));
-                    int4 q = float4(q1.a, q2.a, q3.a, q4.a) == minstd;
+                float minstd = min(q1.a, min(q2.a, min(q3.a, q4.a)));
+                int4 q = float4(q1.a, q2.a, q3.a, q4.a) == minstd;
     
-                    if (dot(q, 1) > 1)
-                        return saturate(float4((q1.rgb + q2.rgb + q3.rgb + q4.rgb) / 4.0f, 1.0f));
-                    else
-                        return saturate(float4(q1.rgb * q.x + q2.rgb * q.y + q3.rgb * q.z + q4.rgb * q.w, 1.0f));
+                if (dot(q, 1) > 1)
+                    return saturate(float4((q1.rgb + q2.rgb + q3.rgb + q4.rgb) / 4.0f, 1.0f));
+                else
+                    return saturate(float4(q1.rgb * q.x + q2.rgb * q.y + q3.rgb * q.z + q4.rgb * q.w, 1.0f));
             }
             ENDCG
         }

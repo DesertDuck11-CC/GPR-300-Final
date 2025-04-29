@@ -254,7 +254,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 8e5d2d860ddd279479264494b383ecd0, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -415,7 +415,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 80c0caf488f8c47499bea82a9fb5961a, type: 2}
+  - {fileID: 2100000, guid: 9d6e7accf9e822f458c7658e34a4c1d3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -593,7 +593,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -623,11 +623,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1459301789}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91acaeb8fa03b144d932ec7782601c4c, type: 3}
+  m_Script: {fileID: 11500000, guid: 29c9f06768d7f9c48aa86b4cd149e502, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kShader: {fileID: 4800000, guid: 3d368c632cbfdd742b5b85504288de5b, type: 3}
-  kMat: {fileID: 2100000, guid: 892e9896b141a124699a1e34c0236b70, type: 2}
+  shader: {fileID: 4800000, guid: 486543ed7a78b544298a6bb6ab5c63d3, type: 3}
+  kernelSize: 4
+  passes: 1
 --- !u!1 &1795743901
 GameObject:
   m_ObjectHideFlags: 0
