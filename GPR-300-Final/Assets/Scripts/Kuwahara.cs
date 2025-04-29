@@ -35,7 +35,7 @@ public class Kuwahara : MonoBehaviour
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-        kMat.SetInt("_KernelSize", kernelSize);
+        kMat.SetInt("_KernelRadius", kernelSize);
         kMat.SetInt("_MinKernelSize", minKernelSize);
         kMat.SetInt("_AnimateSize", animate ? 1 : 0);
         kMat.SetFloat("_SizeAnimationSpeed", animationSpeed);

@@ -30,46 +30,58 @@ internal class KuwaharaPass : ScriptableRenderPass
     [Range(1, 4)]
     public int passes = 1;
 
-    public KuwaharaPass(Material mat)
+    private RenderTargetIdentifier source;
+    RenderTargetHandle tempTexture;
+    private string profilerTag;
+
+    public KuwaharaPass(string pTag)
     {
-        kMat = mat;
-        renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
+        this.profilerTag = pTag;
     }
 
-    public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
+    public void Setup(RenderTargetIdentifier source)
     {
-        ConfigureTarget(camColorTarget);
+        this.source = source;
+    }
+
+    public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
+    {
+        cmd.GetTemporaryRT(tempTexture.id, cameraTextureDescriptor);
+        ConfigureTarget(tempTexture.Identifier());
+        ConfigureClear(ClearFlag.All, Color.black);
     }
 
     public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
     {
-        var cameraData = renderingData.cameraData;
-        if (cameraData.camera.cameraType != CameraType.Game)
-            return;
-
+        CommandBuffer cmd = CommandBufferPool.Get(profilerTag);
+        cmd.Clear();
         if (kMat == null)
             return;
 
-        CommandBuffer cmd = CommandBufferPool.Get();
-        using (new ProfilingScope(cmd, profilingSampler))
-        {
-            kMat.SetInt("_KernelRadius", kernelSize);
-            kMat.SetInt("_MinKernelRadius", minKernelSize);
-            kMat.SetInt("_AnimateSize", animate ? 1 : 0);
-            kMat.SetFloat("_SizeAnimationSpeed", animationSpeed);
-            kMat.SetFloat("_NoiseFrequency", noiseFrequency);
-            kMat.SetInt("_AnimateOrigin", animateKernelOrigin ? 1 : 0);
-            Blitter.BlitCameraTexture(cmd, camColorTarget, camColorTarget, kMat, 0);
-        }
+        kMat.SetInt("_KernelRadius", kernelSize);
+        kMat.SetInt("_MinKernelRadius", minKernelSize);
+        kMat.SetInt("_AnimateSize", animate ? 1 : 0);
+        kMat.SetFloat("_SizeAnimationSpeed", animationSpeed);
+        kMat.SetFloat("_NoiseFrequency", noiseFrequency);
+        kMat.SetInt("_AnimateOrigin", animateKernelOrigin ? 1 : 0);
+        cmd.Blit(source, tempTexture.Identifier());
+        cmd.Blit(tempTexture.Identifier(), source, kMat, 0);
+
+
         context.ExecuteCommandBuffer(cmd);
+        
         cmd.Clear();
 
         CommandBufferPool.Release(cmd);
     }
 
-    public void SetTarget(RTHandle colorHandle, float intensity)
+    public void SetValues(int kSize, bool anim, int minKSize, float animSpeed, float noiseFreq, bool animKOrigin)
     {
-        camColorTarget = colorHandle;
-        colorIntensity = intensity;
+        kernelSize = kSize;
+        animationSpeed = animSpeed;
+        noiseFrequency = noiseFreq;
+        animate = anim;
+        minKernelSize = minKSize;
+        animateKernelOrigin = animKOrigin;
     }
 }
