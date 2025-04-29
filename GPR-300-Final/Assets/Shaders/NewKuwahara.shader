@@ -35,6 +35,7 @@ Shader "Hidden/NewKuwahara"
             }
 
             sampler2D _MainTex;
+            float4 _MainTexTexelSize;
             int _KernelRadius;
 
             // formula for luminance from https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color
@@ -45,7 +46,28 @@ Shader "Hidden/NewKuwahara"
 
             float4 AverageColor(float2 uv, int x1, int x2, int y1, int y2, float n)
             {
+                float lumSum1 = 0.0f; // average
+                float lumVar = 0.0f; // variance
+                float3 colSum = 0.0f;
 
+                [loop]
+                for (int x = x1; x <= x2; ++x)
+                {
+                    [loop]
+                    for (int y = y1; y <= y2; ++y)
+                    {
+                        float3 sample = tex2D(_MainTex, uv + float2(x, y) * _MainTexTexelSize.xy).rgb;
+                        float lum = luminance(sample);
+                        lumSum1 += 1;
+                        lumVar += 1 * 1;
+                        colSum += saturate(sample);
+                    }
+                }
+
+                float avg = lumSum1 / n;
+                float variance = abs(lumVare / n - avg * avg);
+                
+                return float4(colSum / avg, variance);
             }
 
             fixed4 frag (v2f i) : SV_Target
