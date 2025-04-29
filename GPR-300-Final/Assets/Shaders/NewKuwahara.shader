@@ -33,23 +33,15 @@ Shader "Unlit/NewKuwahara" {
 
             sampler2D _MainTex;
             float4 _MainTex_TexelSize;
-            int _KernelRadius, _MinKernelSize, _AnimateSize, _AnimateOrigin;
-            float _SizeAnimationSpeed, _NoiseFrequency;
+            int _KernelRadius;
 
             // luminance calculation from https://stackoverflow.com/questions/596216/formula-to-determine-perceived-brightness-of-rgb-color
             float luminance(float3 color) {
                 return dot(color, float3(0.299f, 0.587f, 0.114f));
             }
 
-            float hash(uint n) {
-                // integer hash copied from Hugo Elias
-                n = (n << 13U) ^ n;
-                n = n * (n * n * 15731U + 0x789221U) + 0x1376312589U;
-                return float(n & uint(0x7fffffffU)) / float(0x7fffffff);
-            }
-
             // Returns average color and variance
-            float4 SampleQuadrant(float2 uv, int x1, int x2, int y1, int y2, float n) {
+            float4 SectorValues(float2 uv, int x1, int x2, int y1, int y2, float n) {
                 float lumSum = 0.0f;
                 float lumVar = 0.0f;
                 float3 colSum = 0.0f;
@@ -67,9 +59,9 @@ Shader "Unlit/NewKuwahara" {
                 }
 
                 float mean = lumSum / n;
-                float std = abs(lumVar / n - mean * mean);
+                float variance = abs(lumVar / n - mean * mean);
 
-                return float4(colSum / n, std);
+                return float4(colSum / n, variance);
             }
 
             float4 fp (v2f i) : SV_Target {
@@ -78,13 +70,14 @@ Shader "Unlit/NewKuwahara" {
                 int numSamples = quadrantSize * quadrantSize;
 
 
-                float4 q1 = SampleQuadrant(i.uv, -_KernelRadius, 0, -_KernelRadius, 0, numSamples);
-                float4 q2 = SampleQuadrant(i.uv, 0, _KernelRadius, -_KernelRadius, 0, numSamples);
-                float4 q3 = SampleQuadrant(i.uv, 0, _KernelRadius, 0, _KernelRadius, numSamples);
-                float4 q4 = SampleQuadrant(i.uv, -_KernelRadius, 0, 0, _KernelRadius, numSamples);
+                float4 q1 = SectorValues(i.uv, -_KernelRadius, 0, -_KernelRadius, 0, numSamples);
+                float4 q2 = SectorValues(i.uv, 0, _KernelRadius, -_KernelRadius, 0, numSamples);
+                float4 q3 = SectorValues(i.uv, 0, _KernelRadius, 0, _KernelRadius, numSamples);
+                float4 q4 = SectorValues(i.uv, -_KernelRadius, 0, 0, _KernelRadius, numSamples);
 
-                float minstd = min(q1.a, min(q2.a, min(q3.a, q4.a)));
-                int4 q = float4(q1.a, q2.a, q3.a, q4.a) == minstd;
+                float minVariance = min(q1.a, min(q2.a, min(q3.a, q4.a)));
+                // pick the quadrant with the lowest variance
+                int4 q = float4(q1.a, q2.a, q3.a, q4.a) == minVariance;
     
                 if (dot(q, 1) > 1)
                     return saturate(float4((q1.rgb + q2.rgb + q3.rgb + q4.rgb) / 4.0f, 1.0f));
