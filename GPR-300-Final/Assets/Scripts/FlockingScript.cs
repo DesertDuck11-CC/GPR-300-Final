@@ -50,8 +50,8 @@ public class FlockingScript : MonoBehaviour
                 Random.Range(minimumBounds.z, maximumBounds.z)
             );
             
-            while(data[i].velocity == null || data[i].velocity == Vector3.zero)
-                data[i].velocity = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1)).normalized;
+            while(data[i].velocity == null || data[i].velocity == Vector3.zero || data[i].velocity == Vector3.up || data[i].velocity == Vector3.down)
+                data[i].velocity = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f)).normalized;
 
             data[i].velocity *= 10;
         }
@@ -94,6 +94,7 @@ public class FlockingScript : MonoBehaviour
 
         cbMatrixMatrices.GetData(modelMatrices);
 
+        
         Graphics.DrawMeshInstanced(fishMesh, 0, fishMat, modelMatrices);
     }
 
