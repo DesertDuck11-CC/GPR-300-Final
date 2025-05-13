@@ -21,7 +21,7 @@ public class FlockingScript : MonoBehaviour
     public ComputeBuffer cbMatrixMatrices;
 
     private Vector3 minimumBounds = Vector3.zero;
-    private Vector3 maximumBounds = new Vector3(40, 20, 30);
+    private Vector3 maximumBounds = new Vector3(250, 50, 250);
 
     //Passed into DrawMeshInstanced
     [SerializeField] Mesh fishMesh;
@@ -36,7 +36,7 @@ public class FlockingScript : MonoBehaviour
 
     void Awake()
     {
-        count = 32;
+        count = 1024 * 8;
         data = new Boid[count];
         modelMatrices = new Matrix4x4[count];
 
@@ -83,8 +83,6 @@ public class FlockingScript : MonoBehaviour
         csFlocking.SetFloat("dt", Time.deltaTime);
         int dispatchCount = (count + 9) / 10;
         csFlocking.Dispatch(flockingKernel, dispatchCount, 1, 1);
-
-        cbFlocking.GetData(data);
     }
 
     private void LateUpdate()

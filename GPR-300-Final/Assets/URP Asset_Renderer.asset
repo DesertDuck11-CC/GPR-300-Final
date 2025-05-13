@@ -72,4 +72,4 @@ MonoBehaviour:
   settings:
     material: {fileID: 2100000, guid: 52e96dc33373b21459ec56af1ddfda19, type: 2}
     renderPassEvent: 400
-    kernelSize: 3
+    kernelSize: 4

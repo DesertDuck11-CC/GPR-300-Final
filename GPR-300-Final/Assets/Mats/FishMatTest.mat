@@ -111,16 +111,16 @@ Material:
     - _RollAmount: 1
     - _RollDist: 0.1
     - _RollFreq: 1
-    - _RollSpeed: 2
+    - _RollSpeed: 4
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _Speed: 2
     - _SrcBlend: 1
     - _SwimAmount: 1
-    - _SwimDist: 0.1
+    - _SwimDist: 0.3
     - _SwimFreq: 2
     - _SwimFrequency: 0.5
-    - _SwimSpeed: 2
+    - _SwimSpeed: 4
     - _TwirlStrength: 1.82
     - _UVSec: 0
     - _WobbleAmount: 0.1

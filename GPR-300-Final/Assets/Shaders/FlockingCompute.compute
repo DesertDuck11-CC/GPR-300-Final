@@ -91,8 +91,10 @@ void CSMain(uint id : SV_DispatchThreadID)
     
     
     //Applying Forces and Changing Velocity
-    b.velocity += forceToApply * dt;
-    b.velocity = normalize(b.velocity);
+    float velModifier = 3;
+    
+    b.velocity += forceToApply * dt * velModifier;
+    b.velocity = normalize(b.velocity) * velModifier;
     b.position += b.velocity * dt;
     
     {//bounds check
